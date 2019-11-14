@@ -39,6 +39,23 @@ impl List {
     }
 }
 
+/// We can't drop the contents of the `Box` _after_ deallocating, so there's no way to drop in a tail-recursive manner.
+/// Instead we're going to have to manually write an iterative drop for `List` that hoists nodes out of their boxes.
+impl Drop for List {
+    fn drop(&mut self) {
+        let mut cur_link = mem::replace(&mut self.head, Link::Empty);
+
+        // `while let` == "do this thing until this pattern doesn't match"
+        while let Link::More(mut boxed_node) = cur_link {
+            cur_link = mem::replace(&mut boxed_node.next, Link::Empty);
+
+            // boxed_node goes out of scope and gets dropped here;
+            // but its Node's `next` field has been set to Link::Empty
+            // so no unbounded recursion occurs.
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::List;
