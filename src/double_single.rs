@@ -77,4 +77,29 @@ impl<T> List<T> {
             right: Stack::new(),
         }
     }
+
+    pub fn push_left(&mut self, elem: T) {
+        self.left.push(elem)
+    }
+    pub fn push_right(&mut self, elem: T) {
+        self.right.push(elem)
+    }
+    pub fn pop_left(&mut self) -> Option<T> {
+        self.left.pop()
+    }
+    pub fn pop_right(&mut self) -> Option<T> {
+        self.right.pop()
+    }
+    pub fn peek_left(&self) -> Option<&T> {
+        self.left.peek()
+    }
+    pub fn peek_right(&self) -> Option<&T> {
+        self.right.peek()
+    }
+    pub fn peek_left_mut(&mut self) -> Option<&mut T> {
+        self.left.peek_mut()
+    }
+    pub fn peek_right_mut(&mut self) -> Option<&mut T> {
+        self.right.peek_mut()
+    }
 }
