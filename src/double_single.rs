@@ -102,4 +102,23 @@ impl<T> List<T> {
     pub fn peek_right_mut(&mut self) -> Option<&mut T> {
         self.right.peek_mut()
     }
+
+    /// We can also "walk" along the list by popping values off one end and onto the other.
+    pub fn go_left(&mut self) -> bool {
+        self.left
+            .pop_node()
+            .map(|node| {
+                self.right.push_node(node);
+            })
+            .is_some()
+    }
+
+    pub fn go_right(&mut self) -> bool {
+        self.right
+            .pop_node()
+            .map(|node| {
+                self.left.push_node(node);
+            })
+            .is_some()
+    }
 }
