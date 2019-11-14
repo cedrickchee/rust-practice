@@ -1,7 +1,7 @@
 [package]
-name = "linked-list"
+name = "rust-practice"
 version = "0.1.0"
-authors = ["ubuntu"]
+authors = ["cedrickchee"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
