@@ -106,6 +106,41 @@ impl<'a, T> Iterator for Iter<'a, T> {
     }
 }
 
+/// Mutable iterator version below
+///
+/// An implementation of a piece of code that takes a singly-linked list,
+/// and returns a mutable reference to every single element in the list at most once.
+/// And it's statically verified to do that. And it's totally safe.
+/// And we didn't have to do anything wild.
+///
+/// That's kind of a big deal, if you ask me.
+///
+/// It turns out that you can apply this basic logic to get a safe IterMut for an
+/// array or a tree as well! You can even make the iterator DoubleEnded,
+/// so that you can consume the iterator from the front and the back at once.
+pub struct IterMut<'a, T> {
+    next: Option<&'a mut Node<T>>,
+}
+
+impl<T> List<T> {
+    pub fn iter_mut(&mut self) -> IterMut<T> {
+        IterMut {
+            next: self.head.as_mut().map(|node| &mut **node),
+        }
+    }
+}
+
+impl<'a, T> Iterator for IterMut<'a, T> {
+    type Item = &'a mut T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.take().map(|node| {
+            self.next = node.next.as_mut().map(|node| &mut **node);
+            &mut node.elem
+        })
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::List;
@@ -185,5 +220,18 @@ mod test {
         assert_eq!(iter.next(), Some(&3));
         assert_eq!(iter.next(), Some(&2));
         assert_eq!(iter.next(), Some(&1));
+    }
+
+    #[test]
+    fn iter_mut() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let mut iter = list.iter_mut();
+        assert_eq!(iter.next(), Some(&mut 3));
+        assert_eq!(iter.next(), Some(&mut 2));
+        assert_eq!(iter.next(), Some(&mut 1));
     }
 }
