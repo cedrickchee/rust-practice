@@ -118,6 +118,23 @@ mod test {
     }
 
     #[test]
+    fn append_tail_append() {
+        let list1 = List::new();
+
+        // Append
+        let list1 = list1.append(1).append(2).append(3).append(4);
+        assert_eq!(list1.head(), Some(&4));
+
+        // Tail
+        let list2 = list1.tail();
+        assert_eq!(list2.head(), Some(&3));
+
+        // Append again
+        let list3 = list2.append(5);
+        assert_eq!(list3.head(), Some(&5));
+    }
+
+    #[test]
     fn iter() {
         let list = List::new().append(1).append(2).append(3);
 
