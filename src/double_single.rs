@@ -1,7 +1,6 @@
 //! # Double Singly-Linked List
 //!
 //! We smash our list into two halves: one going to the left, and one going to the right
-//!
 
 pub struct Stack<T> {
     head: Link<T>,
@@ -71,7 +70,7 @@ pub struct List<T> {
 
 impl<T> List<T> {
     /// Constructor for making List
-    fn new() -> Self {
+    pub fn new() -> Self {
         List {
             left: Stack::new(),
             right: Stack::new(),
@@ -120,5 +119,39 @@ impl<T> List<T> {
                 self.left.push_node(node);
             })
             .is_some()
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::List;
+
+    #[test]
+    fn walk_around() {
+        let mut list = List::new();
+
+        list.push_left(0);
+        list.push_right(1);
+        assert_eq!(list.peek_left(), Some(&0));
+        assert_eq!(list.peek_right(), Some(&1));
+
+        list.push_left(2);
+        list.push_left(3);
+        list.push_right(4);
+
+        while list.go_left() {}
+
+        assert_eq!(list.pop_left(), None);
+        assert_eq!(list.pop_right(), Some(0));
+        assert_eq!(list.pop_right(), Some(2));
+
+        list.push_left(5);
+        assert_eq!(list.pop_right(), Some(3));
+        assert_eq!(list.pop_left(), Some(5));
+        assert_eq!(list.pop_right(), Some(4));
+        assert_eq!(list.pop_right(), Some(1));
+
+        assert_eq!(list.pop_right(), None);
+        assert_eq!(list.pop_left(), None);
     }
 }
