@@ -183,6 +183,42 @@ impl<T> DoubleEndedIterator for IntoIter<T> {
     }
 }
 
+// pub struct Iter<'a, T>(Option<Ref<'a, Node<T>>>);
+
+// impl<T> List<T> {
+//     pub fn iter(&self) -> Iter<T> {
+//         Iter(self.head.as_ref().map(|head| head.borrow()))
+//     }
+// }
+
+// impl<'a, T> Iterator for Iter<'a, T> {
+//     type Item = Ref<'a, T>;
+
+//     fn next(&mut self) -> Option<Self::Item> {
+//         self.0.take().map(|node_ref| {
+//             // RefCell madness!
+//             //
+//             // node_ref doesn't live long enough. Unlike normal references, Rust doesn't let us
+//             // just split Refs up like that. The Ref we get out of head.borrow() is only allowed
+//             // to live as long as node_ref, but we end up trashing that in our Ref::map call.
+
+//             // self.0 = node_ref.next.as_ref().map(|head| head.borrow());
+//             // Ref::map(node_ref, |node| &node.elem)
+
+//             // Alternative solution to that RefCell madness is using `map_split`.
+//             let (next, elem) = Ref::map_split(node_ref, |node| (&node.next, &node.elem));
+
+//             self.0 = if next.is_some() {
+//                 Some(Ref::map(next, |next| &**next.as_ref().unwrap()))
+//             } else {
+//                 None
+//             };
+
+//             elem
+//         })
+//     }
+// }
+
 #[cfg(test)]
 mod test {
     use super::List;
