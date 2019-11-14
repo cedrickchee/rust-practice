@@ -61,3 +61,20 @@ impl<T> Drop for Stack<T> {
         }
     }
 }
+
+/// A general purpose list.
+/// We can grow the list leftwards or rightwards by pushing onto either stack.
+pub struct List<T> {
+    left: Stack<T>,
+    right: Stack<T>,
+}
+
+impl<T> List<T> {
+    /// Constructor for making List
+    fn new() -> Self {
+        List {
+            left: Stack::new(),
+            right: Stack::new(),
+        }
+    }
+}
