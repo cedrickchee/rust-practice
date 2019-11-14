@@ -73,6 +73,39 @@ impl<T> Iterator for IntoIter<T> {
     }
 }
 
+// Iter is generic over *some* lifetime, it doesn't care
+pub struct Iter<'a, T> {
+    next: Option<&'a Node<T>>,
+}
+
+// No lifetime here, List doesn't have any associated lifetimes
+impl<T> List<T> {
+    pub fn iter(&self) -> Iter<T> {
+        // We declare a fresh lifetime here for the *exact* borrow that
+        // creates the iter. Now &self needs to be valid as long as the
+        // Iter is around.
+        Iter {
+            next: self.head.as_ref().map(|node| &**node),
+        } // that &** thing is really janky. Normally Rust is very good at
+          // doing this kind of conversion implicitly, through a process called deref coercion
+    }
+}
+
+// We *do* have a lifetime here, because Iter has one that we need to define
+impl<'a, T> Iterator for Iter<'a, T> {
+    // Need lifetime here too, this is a type declaration
+    type Item = &'a T;
+
+    // Lifetime: None of this needs to change, handled by the above.
+    // Self continues to be incredibly hype and amazing
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.map(|node| {
+            self.next = node.next.as_ref().map(|node| &**node);
+            &node.elem
+        })
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::List;
@@ -139,5 +172,18 @@ mod test {
         assert_eq!(iter.next(), Some(2));
         assert_eq!(iter.next(), Some(1));
         assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn iter() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let mut iter = list.iter();
+        assert_eq!(iter.next(), Some(&3));
+        assert_eq!(iter.next(), Some(&2));
+        assert_eq!(iter.next(), Some(&1));
     }
 }
