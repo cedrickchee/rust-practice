@@ -8,7 +8,7 @@
 //! first and last node.
 //!
 
-use std::cell::{Ref, RefCell};
+use std::cell::{Ref, RefCell, RefMut};
 use std::rc::Rc;
 
 pub struct List<T> {
@@ -135,6 +135,18 @@ impl<T> List<T> {
         self.tail
             .as_ref()
             .map(|node| Ref::map(node.borrow(), |node| &node.elem))
+    }
+
+    pub fn peek_back_mut(&mut self) -> Option<RefMut<T>> {
+        self.tail
+            .as_ref()
+            .map(|node| RefMut::map(node.borrow_mut(), |node| &mut node.elem))
+    }
+
+    pub fn peek_front_mut(&mut self) -> Option<RefMut<T>> {
+        self.head
+            .as_ref()
+            .map(|node| RefMut::map(node.borrow_mut(), |node| &mut node.elem))
     }
 }
 
